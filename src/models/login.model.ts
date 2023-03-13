@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {User} from './user.model';
 
 @model()
 export class Login extends Entity {
@@ -19,7 +20,7 @@ export class Login extends Entity {
     type: 'boolean',
     required: true,
   })
- Code2faStatus: boolean;
+  Code2faStatus: boolean;
 
   @property({
     type: 'string',
@@ -33,6 +34,8 @@ export class Login extends Entity {
   })
   tokenStatus: boolean;
 
+  @belongsTo(() => User)
+  userId: string;
 
   constructor(data?: Partial<Login>) {
     super(data);
