@@ -4,3 +4,4 @@ export * from './rol.model';
 export * from './menu.model';
 export * from './rol-menu.model';
 export * from './user.model';
+export * from './lina.model';

@@ -13,13 +13,13 @@ export class Login extends Entity {
     type: 'string',
     required: true,
   })
-  2faCode: string;
+  code2Fa: string;
 
   @property({
     type: 'boolean',
     required: true,
   })
-  2faCodeStatus: boolean;
+ Code2faStatus: boolean;
 
   @property({
     type: 'string',
