@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class RolMenu extends Entity {
+export class MenuRole extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -37,25 +37,31 @@ export class RolMenu extends Entity {
     type: 'boolean',
     required: true,
   })
+  create: boolean;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
   download: boolean;
 
   @property({
     type: 'string',
   })
-  rolId?: string;
+  roleId?: string;
 
   @property({
     type: 'string',
   })
   menuId?: string;
 
-  constructor(data?: Partial<RolMenu>) {
+  constructor(data?: Partial<MenuRole>) {
     super(data);
   }
 }
 
-export interface RolMenuRelations {
+export interface MenuRoleRelations {
   // describe navigational properties here
 }
 
-export type RolMenuWithRelations = RolMenu & RolMenuRelations;
+export type MenuRoleWithRelations = MenuRole & MenuRoleRelations;

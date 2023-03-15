@@ -1,5 +1,6 @@
 export * from './login.repository';
+export * from './menu-role.repository';
 export * from './menu.repository';
-export * from './rol-menu.repository';
-export * from './rol.repository';
+export * from './role.repository';
 export * from './user.repository';
+

@@ -8,31 +8,31 @@ import {
 } from '@loopback/rest';
 import {
   User,
-  Rol,
+  Role,
 } from '../models';
 import {UserRepository} from '../repositories';
 
-export class UserRolController {
+export class UserRoleController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
   ) { }
 
-  @get('/users/{id}/rol', {
+  @get('/users/{id}/role', {
     responses: {
       '200': {
-        description: 'Rol belonging to User',
+        description: 'Role belonging to User',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Rol),
+            schema: {type: 'array', items: getModelSchemaRef(Role)},
           },
         },
       },
     },
   })
-  async getRol(
+  async getRole(
     @param.path.string('id') id: typeof User.prototype._id,
-  ): Promise<Rol> {
-    return this.userRepository.rol(id);
+  ): Promise<Role> {
+    return this.userRepository.role(id);
   }
 }

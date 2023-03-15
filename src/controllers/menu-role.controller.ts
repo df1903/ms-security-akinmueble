@@ -17,23 +17,23 @@ import {
 } from '@loopback/rest';
 import {
 Menu,
-RolMenu,
-Rol,
+MenuRole,
+Role,
 } from '../models';
 import {MenuRepository} from '../repositories';
 
-export class MenuRolController {
+export class MenuRoleController {
   constructor(
     @repository(MenuRepository) protected menuRepository: MenuRepository,
   ) { }
 
-  @get('/menus/{id}/rols', {
+  @get('/menus/{id}/roles', {
     responses: {
       '200': {
-        description: 'Array of Menu has many Rol through RolMenu',
+        description: 'Array of Menu has many Role through MenuRole',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Rol)},
+            schema: {type: 'array', items: getModelSchemaRef(Role)},
           },
         },
       },
@@ -41,16 +41,16 @@ export class MenuRolController {
   })
   async find(
     @param.path.string('id') id: string,
-    @param.query.object('filter') filter?: Filter<Rol>,
-  ): Promise<Rol[]> {
-    return this.menuRepository.rols(id).find(filter);
+    @param.query.object('filter') filter?: Filter<Role>,
+  ): Promise<Role[]> {
+    return this.menuRepository.roles(id).find(filter);
   }
 
-  @post('/menus/{id}/rols', {
+  @post('/menus/{id}/roles', {
     responses: {
       '200': {
-        description: 'create a Rol model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Rol)}},
+        description: 'create a Role model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Role)}},
       },
     },
   })
@@ -59,21 +59,21 @@ export class MenuRolController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Rol, {
-            title: 'NewRolInMenu',
+          schema: getModelSchemaRef(Role, {
+            title: 'NewRoleInMenu',
             exclude: ['_id'],
           }),
         },
       },
-    }) rol: Omit<Rol, '_id'>,
-  ): Promise<Rol> {
-    return this.menuRepository.rols(id).create(rol);
+    }) role: Omit<Role, '_id'>,
+  ): Promise<Role> {
+    return this.menuRepository.roles(id).create(role);
   }
 
-  @patch('/menus/{id}/rols', {
+  @patch('/menus/{id}/roles', {
     responses: {
       '200': {
-        description: 'Menu.Rol PATCH success count',
+        description: 'Menu.Role PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -83,28 +83,28 @@ export class MenuRolController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Rol, {partial: true}),
+          schema: getModelSchemaRef(Role, {partial: true}),
         },
       },
     })
-    rol: Partial<Rol>,
-    @param.query.object('where', getWhereSchemaFor(Rol)) where?: Where<Rol>,
+    role: Partial<Role>,
+    @param.query.object('where', getWhereSchemaFor(Role)) where?: Where<Role>,
   ): Promise<Count> {
-    return this.menuRepository.rols(id).patch(rol, where);
+    return this.menuRepository.roles(id).patch(role, where);
   }
 
-  @del('/menus/{id}/rols', {
+  @del('/menus/{id}/roles', {
     responses: {
       '200': {
-        description: 'Menu.Rol DELETE success count',
+        description: 'Menu.Role DELETE success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   async delete(
     @param.path.string('id') id: string,
-    @param.query.object('where', getWhereSchemaFor(Rol)) where?: Where<Rol>,
+    @param.query.object('where', getWhereSchemaFor(Role)) where?: Where<Role>,
   ): Promise<Count> {
-    return this.menuRepository.rols(id).delete(where);
+    return this.menuRepository.roles(id).delete(where);
   }
 }

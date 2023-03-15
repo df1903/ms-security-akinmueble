@@ -1,9 +1,9 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyThroughRepositoryFactory, repository} from '@loopback/repository';
 import {MongodbDataSource} from '../datasources';
-import {Menu, MenuRelations, Rol, RolMenu} from '../models';
-import {RolMenuRepository} from './rol-menu.repository';
-import {RolRepository} from './rol.repository';
+import {Menu, MenuRelations, MenuRole, Role} from '../models';
+import {MenuRoleRepository} from './menu-role.repository';
+import {RoleRepository} from './role.repository';
 
 export class MenuRepository extends DefaultCrudRepository<
   Menu,
@@ -11,16 +11,16 @@ export class MenuRepository extends DefaultCrudRepository<
   MenuRelations
 > {
 
-  public readonly rols: HasManyThroughRepositoryFactory<Rol, typeof Rol.prototype._id,
-          RolMenu,
+  public readonly roles: HasManyThroughRepositoryFactory<Role, typeof Role.prototype._id,
+          MenuRole,
           typeof Menu.prototype._id
         >;
 
   constructor(
-    @inject('datasources.mongodb') dataSource: MongodbDataSource, @repository.getter('RolMenuRepository') protected rolMenuRepositoryGetter: Getter<RolMenuRepository>, @repository.getter('RolRepository') protected rolRepositoryGetter: Getter<RolRepository>,
+    @inject('datasources.mongodb') dataSource: MongodbDataSource, @repository.getter('MenuRoleRepository') protected menuRoleRepositoryGetter: Getter<MenuRoleRepository>, @repository.getter('RoleRepository') protected roleRepositoryGetter: Getter<RoleRepository>,
   ) {
     super(Menu, dataSource);
-    this.rols = this.createHasManyThroughRepositoryFactoryFor('rols', rolRepositoryGetter, rolMenuRepositoryGetter,);
-    this.registerInclusionResolver('rols', this.rols.inclusionResolver);
+    this.roles = this.createHasManyThroughRepositoryFactoryFor('roles', roleRepositoryGetter, menuRoleRepositoryGetter,);
+    this.registerInclusionResolver('roles', this.roles.inclusionResolver);
   }
 }

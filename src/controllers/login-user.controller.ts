@@ -2,9 +2,9 @@ import {
   repository,
 } from '@loopback/repository';
 import {
-  param,
   get,
   getModelSchemaRef,
+  param,
 } from '@loopback/rest';
 import {
   Login,
@@ -24,7 +24,7 @@ export class LoginUserController {
         description: 'User belonging to Login',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(User),
+            schema: {type: 'array', items: getModelSchemaRef(User)},
           },
         },
       },
