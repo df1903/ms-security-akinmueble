@@ -187,8 +187,9 @@ export class UserController {
       login.code2FA = code2FA;
       login.codeStatus = false;
       login.token = '';
-      login.TokenStatus = false;
+      login.tokenStatus = false;
       this.loginRepository.create(login);
+      user.password = '';
       // Send email notification with code2FA
       return user;
     }
@@ -214,6 +215,20 @@ export class UserController {
       let token = this.userSecurityService.createToken(user);
       if (user) {
         user.password = '';
+        try {
+          this.userRepository.logins(user._id).patch(
+            {
+              codeStatus: true,
+              token: token,
+            },
+            {
+              codeStatus: false,
+              token: '',
+            },
+          );
+        } catch {
+          console.log("Code2FA status can't change into database");
+        }
         return {
           user: user,
           token: token,
