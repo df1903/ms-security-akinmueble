@@ -1,5 +1,5 @@
-import { Entity, belongsTo, model, property } from '@loopback/repository';
-import { User } from './user.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {User} from './user.model';
 
 @model()
 export class Login extends Entity {
