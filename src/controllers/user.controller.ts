@@ -19,7 +19,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Credentials, Login, User} from '../models';
+import {Credentials, Login, User, VerificationCode} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
 import {UserSecurityService} from '../services';
 
@@ -167,7 +167,7 @@ export class UserController {
   @post('/loginUser')
   @response(200, {
     description: 'Login user with credentials',
-    content: {'application/json': {schema: getModelSchemaRef(Credentials)}},
+    content: {'application/json': {schema: getModelSchemaRef(User)}},
   })
   async loginUser(
     @requestBody({
@@ -193,5 +193,33 @@ export class UserController {
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
+  }
+
+  @post('/codeVerification')
+  @response(200, {
+    description: 'Validate verification code',
+  })
+  async validateCode(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(VerificationCode),
+        },
+      },
+    })
+    credentials: VerificationCode,
+  ): Promise<object> {
+    let user = await this.userSecurityService.validateCode(credentials);
+    if (user) {
+      let token = this.userSecurityService.createToken(user);
+      if (user) {
+        user.password = '';
+        return {
+          user: user,
+          token: token,
+        };
+      }
+    }
+    return new HttpErrors[401]('Incorrect verification code');
   }
 }

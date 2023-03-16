@@ -1,15 +1,20 @@
 import {/* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {Credentials, User} from '../models';
-import {UserRepository} from '../repositories';
+import {ConfigSecurity} from '../config/security.config';
+import {Credentials, User, VerificationCode} from '../models';
+import {LoginRepository, UserRepository} from '../repositories';
+
 const generator = require('generate-password');
 const MD5 = require('crypto-js/md5');
+const jwt = require('jsonwebtoken');
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class UserSecurityService {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(LoginRepository)
+    public loginRepository: LoginRepository,
   ) {}
 
   /**
@@ -48,5 +53,40 @@ export class UserSecurityService {
       },
     });
     return user as User;
+  }
+
+  /**
+   * Validation of credentials with verification code
+   * @param credentials Credentials by user with verification code
+   * @returns User or null
+   */
+  async validateCode(credentials: VerificationCode): Promise<User | null> {
+    let login = await this.loginRepository.findOne({
+      where: {
+        userId: credentials.userId,
+        code2FA: credentials.code2FA,
+        codeStatus: false,
+      },
+    });
+    if (login) {
+      let user = await this.userRepository.findById(credentials.userId);
+      return user;
+    }
+    return null;
+  }
+
+  /**
+   * Token JWT generator
+   * @param user
+   * @returns tokenJWT
+   */
+  createToken(user: User): string {
+    let data = {
+      name: `${user.firstName} ${user.secondName} ${user.firstLastname} ${user.secondLastname}`,
+      role: user.roleId,
+      email: user.email,
+    };
+    let token = jwt.sign(data, ConfigSecurity.keyJWT);
+    return token;
   }
 }
