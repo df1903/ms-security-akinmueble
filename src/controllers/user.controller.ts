@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {
   Count,
@@ -5,7 +6,7 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
   del,
@@ -17,7 +18,7 @@ import {
   post,
   put,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
 import {Credentials, Login, User, VerificationCode} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
@@ -72,6 +73,7 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
+  @authenticate("auth")
   @get('/user')
   @response(200, {
     description: 'Array of User model instances',
