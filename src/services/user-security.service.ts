@@ -1,4 +1,4 @@
-import {/* inject, */ BindingScope, injectable} from '@loopback/core';
+import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {ConfigSecurity} from '../config/security.config';
 import {Credentials, User, VerificationCode} from '../models';
@@ -88,5 +88,14 @@ export class UserSecurityService {
     };
     let token = jwt.sign(data, ConfigSecurity.keyJWT);
     return token;
+  }
+  /**
+   * validate and get token information
+   * @param tk the token
+   * @returns th _id of the role
+   */
+  getRolrFromToken(tk:string): string {
+    let obj =jwt.vefify(tk, ConfigSecurity.keyJWT);
+    return obj.role;
   }
 }
