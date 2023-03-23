@@ -14,7 +14,7 @@ export class AuthStrategy implements AuthenticationStrategy {
     @service(UserSecurityService)
     private securityService: UserSecurityService,
     @inject(AuthenticationBindings.METADATA)
-    private metadata: AuthenticationMetadata,
+    private metadata: AuthenticationMetadata[],
     @repository(MenuRoleRepository)
     private repositoryMenuRole: MenuRoleRepository
   ) {}
@@ -27,9 +27,9 @@ export class AuthStrategy implements AuthenticationStrategy {
   async authenticate(request: Request): Promise<UserProfile | undefined> {
     let token = parseBearerToken(request);
     if (token){
-      let idRole = this.securityService.getRolrFromToken(token);
-      let idMenu: string = this.metadata.options![0];
-      let action: string = this.metadata.options![1];
+      let idRole = this.securityService.getRoleFromToken(token);
+      let idMenu: string = this.metadata[0].options![0];
+      let action: string = this.metadata[0].options![1];
 
       let permission = await this.repositoryMenuRole.findOne({
         where:{

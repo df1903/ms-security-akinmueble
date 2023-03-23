@@ -94,8 +94,8 @@ export class UserSecurityService {
    * @param tk the token
    * @returns th _id of the role
    */
-  getRolrFromToken(tk:string): string {
-    let obj =jwt.vefify(tk, ConfigSecurity.keyJWT);
+  getRoleFromToken(tk:string): string {
+    let obj =jwt.verify(tk, ConfigSecurity.keyJWT);
     return obj.role;
   }
 }
