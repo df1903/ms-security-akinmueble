@@ -1,6 +1,6 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {ConfigSecurity} from '../config/security.config';
+import {SecurityConfig} from '../config/security.config';
 import {Credentials, User, VerificationCode} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
 
@@ -86,7 +86,7 @@ export class UserSecurityService {
       role: user.roleId,
       email: user.email,
     };
-    let token = jwt.sign(data, ConfigSecurity.keyJWT);
+    let token = jwt.sign(data, SecurityConfig.keyJWT);
     return token;
   }
   /**
@@ -95,7 +95,7 @@ export class UserSecurityService {
    * @returns th _id of the role
    */
   getRoleFromToken(tk:string): string {
-    let obj =jwt.verify(tk, ConfigSecurity.keyJWT);
+    let obj =jwt.verify(tk, SecurityConfig.keyJWT);
     return obj.role;
   }
 }

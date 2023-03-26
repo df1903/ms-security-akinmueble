@@ -20,7 +20,7 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
-import {ConfigSecurity} from '../config/security.config';
+import {SecurityConfig} from '../config/security.config';
 import {Credentials, Login, User, VerificationCode} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
 import {UserSecurityService} from '../services';
@@ -76,7 +76,7 @@ export class UserController {
 
   @authenticate({
     strategy: "auth",
-    options:[ConfigSecurity.menuUserId, ConfigSecurity.listAction]
+    options:[SecurityConfig.menuUserId, SecurityConfig.listAction]
   })
   @get('/user')
   @response(200, {
