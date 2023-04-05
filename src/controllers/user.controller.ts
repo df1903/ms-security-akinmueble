@@ -222,8 +222,8 @@ export class UserController {
     )
     data: MenuRolePermissions
   ): Promise<UserProfile | undefined> {
-    // let idRole = this.securityService.getRoleFromToken(data.token)
-    return this.serviceAuth.checkUserPermissionByRole(data.idRole, data.idMenu, data.action)
+    let idRole = this.userSecurityService.getRoleFromToken(data.token)
+    return this.serviceAuth.checkUserPermissionByRole(idRole, data.idMenu, data.action)
   }
 
   @post('/codeVerification')
