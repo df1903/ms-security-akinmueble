@@ -20,10 +20,11 @@ import {
   requestBody,
   response
 } from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
 import {SecurityConfig} from '../config/security.config';
-import {Credentials, Login, User, VerificationCode} from '../models';
+import {Credentials, Login, MenuRolePermissions, User, VerificationCode} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
-import {UserSecurityService} from '../services';
+import {AuthService, UserSecurityService} from '../services';
 
 export class UserController {
   constructor(
@@ -33,6 +34,8 @@ export class UserController {
     public userSecurityService: UserSecurityService,
     @repository(LoginRepository)
     public loginRepository: LoginRepository,
+    @service(AuthService)
+    private serviceAuth: AuthService
   ) {}
 
   @post('/user')
@@ -200,6 +203,27 @@ export class UserController {
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
+  }
+
+  @post('/validate-permissions')
+  @response(200, {
+    description: "Validation of permissions of a user for business logic",
+    content: {'application/json': {schema: getModelSchemaRef(MenuRolePermissions)}}
+  })
+  async validateUserPermissions(
+    @requestBody(
+      {
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(MenuRolePermissions)
+          }
+        }
+      }
+    )
+    data: MenuRolePermissions
+  ): Promise<UserProfile | undefined> {
+    // let idRole = this.securityService.getRoleFromToken(data.token)
+    return this.serviceAuth.checkUserPermissionByRole(data.idRole, data.idMenu, data.action)
   }
 
   @post('/codeVerification')

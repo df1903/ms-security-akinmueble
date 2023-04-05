@@ -5,7 +5,7 @@ import {HttpErrors, Request} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import parseBearerToken from 'parse-bearer-token';
 import {MenuRoleRepository} from '../repositories';
-import {UserSecurityService} from '../services';
+import {AuthService, UserSecurityService} from '../services';
 
 export class AuthStrategy implements AuthenticationStrategy {
   name: string = 'auth';
@@ -16,7 +16,9 @@ export class AuthStrategy implements AuthenticationStrategy {
     @inject(AuthenticationBindings.METADATA)
     private metadata: AuthenticationMetadata[],
     @repository(MenuRoleRepository)
-    private repositoryMenuRole: MenuRoleRepository
+    private repositoryMenuRole: MenuRoleRepository,
+    @service(AuthService)
+    private authService: AuthService
   ) {}
 
   /**
@@ -30,51 +32,13 @@ export class AuthStrategy implements AuthenticationStrategy {
       let idRole = this.securityService.getRoleFromToken(token);
       let idMenu: string = this.metadata[0].options![0];
       let action: string = this.metadata[0].options![1];
-
-      let permission = await this.repositoryMenuRole.findOne({
-        where:{
-          roleId: idRole,
-          menuId: idMenu
-        }
-      });
-      let proceed: boolean = false;
-      if (permission) {
-        switch (action) {
-          case "save":
-            proceed = permission.save
-            break;
-          case "edit":
-            proceed = permission.edit
-            break;
-          case "list":
-            proceed = permission.list
-            break;
-          case "delete":
-            proceed = permission.delete
-            break;
-          case "download":
-            proceed = permission.download
-            break;
-          case "create":
-            proceed = permission.create
-            break;
-          default:
-            throw new HttpErrors[401]("The action cannot be performed because it does not exist");
-        }
-        if(proceed){
-          let profile: UserProfile = Object.assign({
-            permitted: "Ok"
-          });
-          return profile;
-        } else {
-          return undefined;
-        }
-
-      } else {
-        throw new HttpErrors[401]("It is not possible to execute the action due to lack of permissions.");
+      try {
+        let res = await this.authService.checkUserPermissionByRole(idRole, idMenu, action);
+        return res;
+      } catch (e) {
+        throw e;
       }
     }
-    throw new HttpErrors[401]("it is not possible to execute the action due to lack of a token.");
-
-  }
+      throw new HttpErrors[401]("it is not possible to execute the action due to lack of a token.");
+    }
 }
