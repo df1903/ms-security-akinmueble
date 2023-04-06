@@ -5,26 +5,37 @@ import {
   CountSchema,
   Filter,
   FilterExcludingWhere,
+  Where,
   repository,
-  Where
 } from '@loopback/repository';
 import {
+  HttpErrors,
   del,
   get,
   getModelSchemaRef,
-  HttpErrors,
   param,
   patch,
   post,
   put,
   requestBody,
-  response
+  response,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
+import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
-import {Credentials, Login, MenuRolePermissions, User, VerificationCode} from '../models';
+import {
+  Credentials,
+  Login,
+  MenuRolePermissions,
+  User,
+  VerificationCode,
+} from '../models';
 import {LoginRepository, UserRepository} from '../repositories';
-import {AuthService, UserSecurityService} from '../services';
+import {
+  AuthService,
+  NotificationsService,
+  UserSecurityService,
+} from '../services';
 
 export class UserController {
   constructor(
@@ -35,7 +46,9 @@ export class UserController {
     @repository(LoginRepository)
     public loginRepository: LoginRepository,
     @service(AuthService)
-    private serviceAuth: AuthService
+    private serviceAuth: AuthService,
+    @service(NotificationsService)
+    public serviceNotifications: NotificationsService,
   ) {}
 
   @post('/user')
@@ -78,8 +91,8 @@ export class UserController {
   }
 
   @authenticate({
-    strategy: "auth",
-    options:[SecurityConfig.menuUserId, SecurityConfig.listAction]
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.listAction],
   })
   @get('/user')
   @response(200, {
@@ -200,6 +213,14 @@ export class UserController {
       this.loginRepository.create(login);
       user.password = '';
       // Send email notification with code2FA
+      let data = {
+        destinyEmail: user.email,
+        destinyName: user.firstName + ' ' + user.secondName,
+        emailContent: NotificationsConfig.emailContent + code2FA,
+        emailSubject: NotificationsConfig.subject2FA,
+      };
+      let url = NotificationsConfig.urlNotifications2FA;
+      this.serviceNotifications.sendEmail(data, url);
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
@@ -207,23 +228,27 @@ export class UserController {
 
   @post('/validate-permissions')
   @response(200, {
-    description: "Validation of permissions of a user for business logic",
-    content: {'application/json': {schema: getModelSchemaRef(MenuRolePermissions)}}
+    description: 'Validation of permissions of a user for business logic',
+    content: {
+      'application/json': {schema: getModelSchemaRef(MenuRolePermissions)},
+    },
   })
   async validateUserPermissions(
-    @requestBody(
-      {
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(MenuRolePermissions)
-          }
-        }
-      }
-    )
-    data: MenuRolePermissions
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(MenuRolePermissions),
+        },
+      },
+    })
+    data: MenuRolePermissions,
   ): Promise<UserProfile | undefined> {
-    let idRole = this.userSecurityService.getRoleFromToken(data.token)
-    return this.serviceAuth.checkUserPermissionByRole(idRole, data.idMenu, data.action)
+    let idRole = this.userSecurityService.getRoleFromToken(data.token);
+    return this.serviceAuth.checkUserPermissionByRole(
+      idRole,
+      data.idMenu,
+      data.action,
+    );
   }
 
   @post('/codeVerification')
