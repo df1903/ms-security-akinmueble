@@ -216,8 +216,8 @@ export class UserController {
       let data = {
         destinyEmail: user.email,
         destinyName: user.firstName + ' ' + user.secondName,
-        emailContent: NotificationsConfig.emailContent + code2FA,
-        emailSubject: NotificationsConfig.subject2FA,
+        emailBody: NotificationsConfig.emailBody2FA + code2FA,
+        emailSubject: NotificationsConfig.emailSubject2FA,
       };
       let url = NotificationsConfig.urlNotifications2FA;
       this.serviceNotifications.sendEmail(data, url);
