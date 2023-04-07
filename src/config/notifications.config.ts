@@ -1,6 +1,7 @@
 export namespace NotificationsConfig {
   export const emailSubject2FA = 'Verification Code';
-  export const emailBody2FA = `Your 2FA Code is: `;
-  export const urlNotifications2FA =
-    'http://localhost:5187/controller/send-code-2fa';
+  export const urlNotifications2FA: string =
+    'https://localhost:7183/Notifications/send-code-2fa';
+  export const urlNotificationsSMS: string =
+    'https://localhost:7183/Notifications/send-sms';
 }

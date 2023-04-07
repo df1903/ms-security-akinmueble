@@ -9,7 +9,7 @@ export class NotificationsService {
    * Add service methods here
    */
 
-  sendEmail(data: any, url: string) {
+  sendNotification(data: any, url: string) {
     fetch(url, {
       method: 'post',
       body: JSON.stringify(data),

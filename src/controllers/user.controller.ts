@@ -27,6 +27,7 @@ import {
   Credentials,
   Login,
   MenuRolePermissions,
+  RecoveryPasswordCredentials,
   User,
   VerificationCode,
 } from '../models';
@@ -216,11 +217,11 @@ export class UserController {
       let data = {
         destinyEmail: user.email,
         destinyName: user.firstName + ' ' + user.secondName,
-        emailBody: NotificationsConfig.emailBody2FA + code2FA,
+        emailBody: `Your 2FA Code is: ${code2FA}`,
         emailSubject: NotificationsConfig.emailSubject2FA,
       };
       let url = NotificationsConfig.urlNotifications2FA;
-      this.serviceNotifications.sendEmail(data, url);
+      this.serviceNotifications.sendNotification(data, url);
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
@@ -291,5 +292,43 @@ export class UserController {
       }
     }
     return new HttpErrors[401]('Incorrect verification code');
+  }
+
+  @post('/recovery-password')
+  @response(200, {
+    description: 'Login user with credentials',
+    content: {'application/json': {schema: getModelSchemaRef(User)}},
+  })
+  async recoveryPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(RecoveryPasswordCredentials),
+        },
+      },
+    })
+    credentials: RecoveryPasswordCredentials,
+  ): Promise<object> {
+    let user = await this.userRepository.findOne({
+      where: {
+        email: credentials.email,
+      },
+    });
+    if (user) {
+      let newPassword = this.userSecurityService.createTxt(5);
+      console.log(newPassword);
+      let encryptedPassword = this.userSecurityService.encryptTxt(newPassword);
+      user.password = encryptedPassword;
+      this.userRepository.updateById(user._id, user);
+      // Send sms notification
+      let data = {
+        destinyPhone: user.phone,
+        smsBody: `Hello ${user.firstName},\nyour new password is:\n\n ${newPassword}`,
+      };
+      let url = NotificationsConfig.urlNotificationsSMS;
+      this.serviceNotifications.sendNotification(data, url);
+      return user;
+    }
+    return new HttpErrors[401]('Incorrect credentials');
   }
 }
