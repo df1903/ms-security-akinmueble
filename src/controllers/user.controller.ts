@@ -296,7 +296,7 @@ export class UserController {
 
   @post('/recovery-password')
   @response(200, {
-    description: 'Login user with credentials',
+    description: 'Recover password by SMS',
     content: {'application/json': {schema: getModelSchemaRef(User)}},
   })
   async recoveryPassword(

@@ -1,22 +1,13 @@
-import {
-  repository,
-} from '@loopback/repository';
-import {
-  get,
-  getModelSchemaRef,
-  param,
-} from '@loopback/rest';
-import {
-  Login,
-  User,
-} from '../models';
+import {repository} from '@loopback/repository';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {Login, User} from '../models';
 import {LoginRepository} from '../repositories';
 
 export class LoginUserController {
   constructor(
     @repository(LoginRepository)
     public loginRepository: LoginRepository,
-  ) { }
+  ) {}
 
   @get('/logins/{id}/user', {
     responses: {

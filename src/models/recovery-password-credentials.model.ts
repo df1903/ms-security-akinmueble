@@ -8,7 +8,6 @@ export class RecoveryPasswordCredentials extends Model {
   })
   email: string;
 
-
   constructor(data?: Partial<RecoveryPasswordCredentials>) {
     super(data);
   }
@@ -18,4 +17,5 @@ export interface RecoveryPasswordCredentialsRelations {
   // describe navigational properties here
 }
 
-export type RecoveryPasswordCredentialsWithRelations = RecoveryPasswordCredentials & RecoveryPasswordCredentialsRelations;
+export type RecoveryPasswordCredentialsWithRelations =
+  RecoveryPasswordCredentials & RecoveryPasswordCredentialsRelations;

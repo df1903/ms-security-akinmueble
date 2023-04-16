@@ -1,4 +1,4 @@
-import { /* inject, */ BindingScope, injectable} from '@loopback/core';
+import {/* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {SecurityConfig} from '../config/security.config';
 import {Credentials, User, VerificationCode} from '../models';
@@ -19,7 +19,7 @@ export class UserSecurityService {
 
   /**
    * Create random password with n characters
-   * @param n password lenght
+   * @param n password length
    * @returns random password with n characters
    */
   createTxt(n: number): string {
@@ -43,7 +43,7 @@ export class UserSecurityService {
   /**
    * Search an user with its credentials
    * @param credentials User credentials
-   * @returns User finded or null
+   * @returns User found or null
    */
   async loginUser(credentials: Credentials): Promise<User | null> {
     let user = await this.userRepository.findOne({
@@ -94,8 +94,8 @@ export class UserSecurityService {
    * @param tk the token
    * @returns th _id of the role
    */
-  getRoleFromToken(tk:string): string {
-    let obj =jwt.verify(tk, SecurityConfig.keyJWT);
+  getRoleFromToken(tk: string): string {
+    let obj = jwt.verify(tk, SecurityConfig.keyJWT);
     return obj.role;
   }
 }

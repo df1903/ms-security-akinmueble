@@ -1,7 +1,7 @@
-import { Entity, hasMany, model, property } from '@loopback/repository';
-import { MenuRole } from './menu-role.model';
-import { Menu } from './menu.model';
-import { User } from './user.model';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {MenuRole} from './menu-role.model';
+import {Menu} from './menu.model';
+import {User} from './user.model';
 
 @model()
 export class Role extends Entity {

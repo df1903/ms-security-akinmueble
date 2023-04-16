@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,7 +23,7 @@ import {MenuRoleRepository} from '../repositories';
 export class PermissionsController {
   constructor(
     @repository(MenuRoleRepository)
-    public menuRoleRepository : MenuRoleRepository,
+    public menuRoleRepository: MenuRoleRepository,
   ) {}
 
   @post('/permission')
@@ -52,9 +52,7 @@ export class PermissionsController {
     description: 'MenuRole model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(MenuRole) where?: Where<MenuRole>,
-  ): Promise<Count> {
+  async count(@param.where(MenuRole) where?: Where<MenuRole>): Promise<Count> {
     return this.menuRoleRepository.count(where);
   }
 
@@ -106,7 +104,8 @@ export class PermissionsController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(MenuRole, {exclude: 'where'}) filter?: FilterExcludingWhere<MenuRole>
+    @param.filter(MenuRole, {exclude: 'where'})
+    filter?: FilterExcludingWhere<MenuRole>,
   ): Promise<MenuRole> {
     return this.menuRoleRepository.findById(id, filter);
   }

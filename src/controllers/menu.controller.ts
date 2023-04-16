@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,7 +23,7 @@ import {MenuRepository} from '../repositories';
 export class MenuController {
   constructor(
     @repository(MenuRepository)
-    public menuRepository : MenuRepository,
+    public menuRepository: MenuRepository,
   ) {}
 
   @post('/menu')
@@ -52,9 +52,7 @@ export class MenuController {
     description: 'Menu model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Menu) where?: Where<Menu>,
-  ): Promise<Count> {
+  async count(@param.where(Menu) where?: Where<Menu>): Promise<Count> {
     return this.menuRepository.count(where);
   }
 
@@ -70,9 +68,7 @@ export class MenuController {
       },
     },
   })
-  async find(
-    @param.filter(Menu) filter?: Filter<Menu>,
-  ): Promise<Menu[]> {
+  async find(@param.filter(Menu) filter?: Filter<Menu>): Promise<Menu[]> {
     return this.menuRepository.find(filter);
   }
 
@@ -106,7 +102,7 @@ export class MenuController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Menu, {exclude: 'where'}) filter?: FilterExcludingWhere<Menu>
+    @param.filter(Menu, {exclude: 'where'}) filter?: FilterExcludingWhere<Menu>,
   ): Promise<Menu> {
     return this.menuRepository.findById(id, filter);
   }

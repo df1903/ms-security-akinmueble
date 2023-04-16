@@ -8,9 +8,7 @@ export class MenuRoleRepository extends DefaultCrudRepository<
   typeof MenuRole.prototype._id,
   MenuRoleRelations
 > {
-  constructor(
-    @inject('datasources.mongodb') dataSource: MongodbDataSource,
-  ) {
+  constructor(@inject('datasources.mongodb') dataSource: MongodbDataSource) {
     super(MenuRole, dataSource);
   }
 }
