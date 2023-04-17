@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Menu} from '../models';
 import {MenuRepository} from '../repositories';
 
@@ -26,6 +28,10 @@ export class MenuController {
     public menuRepository: MenuRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.createAction],
+  })
   @post('/menu')
   @response(200, {
     description: 'Menu model instance',
@@ -47,6 +53,10 @@ export class MenuController {
     return this.menuRepository.create(menu);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.listAction],
+  })
   @get('/menu/count')
   @response(200, {
     description: 'Menu model count',
@@ -56,6 +66,10 @@ export class MenuController {
     return this.menuRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.listAction],
+  })
   @get('/menu')
   @response(200, {
     description: 'Array of Menu model instances',
@@ -72,6 +86,10 @@ export class MenuController {
     return this.menuRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.editAction],
+  })
   @patch('/menu')
   @response(200, {
     description: 'Menu PATCH success count',
@@ -91,6 +109,10 @@ export class MenuController {
     return this.menuRepository.updateAll(menu, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.listAction],
+  })
   @get('/menu/{id}')
   @response(200, {
     description: 'Menu model instance',
@@ -107,6 +129,10 @@ export class MenuController {
     return this.menuRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.editAction],
+  })
   @patch('/menu/{id}')
   @response(204, {
     description: 'Menu PATCH success',
@@ -125,6 +151,10 @@ export class MenuController {
     await this.menuRepository.updateById(id, menu);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.createAction],
+  })
   @put('/menu/{id}')
   @response(204, {
     description: 'Menu PUT success',
@@ -136,6 +166,10 @@ export class MenuController {
     await this.menuRepository.replaceById(id, menu);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.deleteAction],
+  })
   @del('/menu/{id}')
   @response(204, {
     description: 'Menu DELETE success',

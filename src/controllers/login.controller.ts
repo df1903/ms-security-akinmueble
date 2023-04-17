@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Login} from '../models';
 import {LoginRepository} from '../repositories';
 
@@ -26,6 +28,10 @@ export class LoginController {
     public loginRepository: LoginRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.createAction],
+  })
   @post('/login')
   @response(200, {
     description: 'Login model instance',
@@ -47,6 +53,10 @@ export class LoginController {
     return this.loginRepository.create(login);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.listAction],
+  })
   @get('/login/count')
   @response(200, {
     description: 'Login model count',
@@ -56,6 +66,10 @@ export class LoginController {
     return this.loginRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.listAction],
+  })
   @get('/login')
   @response(200, {
     description: 'Array of Login model instances',
@@ -72,6 +86,10 @@ export class LoginController {
     return this.loginRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.editAction],
+  })
   @patch('/login')
   @response(200, {
     description: 'Login PATCH success count',
@@ -91,6 +109,10 @@ export class LoginController {
     return this.loginRepository.updateAll(login, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.listAction],
+  })
   @get('/login/{id}')
   @response(200, {
     description: 'Login model instance',
@@ -126,6 +148,10 @@ export class LoginController {
     await this.loginRepository.updateById(id, login);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.createAction],
+  })
   @put('/login/{id}')
   @response(204, {
     description: 'Login PUT success',
@@ -137,6 +163,10 @@ export class LoginController {
     await this.loginRepository.replaceById(id, login);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.deleteAction],
+  })
   @del('/login/{id}')
   @response(204, {
     description: 'Login DELETE success',
