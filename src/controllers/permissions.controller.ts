@@ -28,10 +28,10 @@ export class PermissionsController {
     public menuRoleRepository: MenuRoleRepository,
   ) {}
 
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuPermissionsId, SecurityConfig.createAction],
-  })
+  // @authenticate({
+  //   strategy: 'auth',
+  //   options: [SecurityConfig.menuPermissionsId, SecurityConfig.createAction],
+  // })
   @post('/permission')
   @response(200, {
     description: 'MenuRole model instance',
