@@ -78,10 +78,21 @@ export class UserController {
     // Assign encrypted password to user
     user.password = encryptedPassword;
     // Send verification email
-    // ...
+    let data = {
+      destinyEmail: user.email,
+      destinyName: user.firstName,
+      emailBody: `Dale click al siguiente enlace para verificar tu correo`,
+      emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
+    };
+    let url = NotificationsConfig.urlNotificationsVerificateEmail;
+    this.serviceNotifications.sendNotification(data, url);
     return this.userRepository.create(user);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.listAction],
+  })
   @get('/user/count')
   @response(200, {
     description: 'User model count',
@@ -130,6 +141,10 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.listAction],
+  })
   @get('/user/{id}')
   @response(200, {
     description: 'User model instance',
@@ -164,6 +179,13 @@ export class UserController {
     await this.userRepository.updateById(id, user);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [
+      SecurityConfig.menuUserId,
+      [SecurityConfig.createAction, SecurityConfig.editAction],
+    ],
+  })
   @put('/user/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -175,6 +197,10 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.deleteAction],
+  })
   @del('/user/{id}')
   @response(204, {
     description: 'User DELETE success',
@@ -216,7 +242,7 @@ export class UserController {
       // Send email notification with code2FA
       let data = {
         destinyEmail: user.email,
-        destinyName: user.firstName + ' ' + user.secondName,
+        destinyName: user.firstName,
         emailBody: `Your 2FA Code is: ${code2FA}`,
         emailSubject: NotificationsConfig.emailSubject2FA,
       };
