@@ -150,7 +150,7 @@ export class LoginController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuLoginsId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.editAction],
   })
   @put('/login/{id}')
   @response(204, {

@@ -153,7 +153,7 @@ export class MenuController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuMenusId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuMenusId, SecurityConfig.editAction],
   })
   @put('/menu/{id}')
   @response(204, {

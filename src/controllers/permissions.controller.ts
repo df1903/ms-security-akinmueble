@@ -156,10 +156,7 @@ export class PermissionsController {
 
   @authenticate({
     strategy: 'auth',
-    options: [
-      SecurityConfig.menuPermissionsId,
-      [SecurityConfig.createAction, SecurityConfig.editAction],
-    ],
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.editAction],
   })
   @put('/permission/{id}')
   @response(204, {

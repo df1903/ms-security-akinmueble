@@ -153,7 +153,7 @@ export class RoleController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuRoleId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuRoleId, SecurityConfig.editAction],
   })
   @put('/role/{id}')
   @response(204, {

@@ -181,10 +181,7 @@ export class UserController {
 
   @authenticate({
     strategy: 'auth',
-    options: [
-      SecurityConfig.menuUserId,
-      [SecurityConfig.createAction, SecurityConfig.editAction],
-    ],
+    options: [SecurityConfig.menuUserId, SecurityConfig.editAction],
   })
   @put('/user/{id}')
   @response(204, {
