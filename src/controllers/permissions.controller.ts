@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {MenuRole} from '../models';
 import {MenuRoleRepository} from '../repositories';
 
@@ -26,6 +28,10 @@ export class PermissionsController {
     public menuRoleRepository: MenuRoleRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.createAction],
+  })
   @post('/permission')
   @response(200, {
     description: 'MenuRole model instance',
@@ -47,6 +53,10 @@ export class PermissionsController {
     return this.menuRoleRepository.create(menuRole);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.listAction],
+  })
   @get('/permission/count')
   @response(200, {
     description: 'MenuRole model count',
@@ -56,6 +66,10 @@ export class PermissionsController {
     return this.menuRoleRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.listAction],
+  })
   @get('/permission')
   @response(200, {
     description: 'Array of MenuRole model instances',
@@ -74,6 +88,10 @@ export class PermissionsController {
     return this.menuRoleRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.editAction],
+  })
   @patch('/permission')
   @response(200, {
     description: 'MenuRole PATCH success count',
@@ -93,6 +111,10 @@ export class PermissionsController {
     return this.menuRoleRepository.updateAll(menuRole, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.listAction],
+  })
   @get('/permission/{id}')
   @response(200, {
     description: 'MenuRole model instance',
@@ -110,6 +132,10 @@ export class PermissionsController {
     return this.menuRoleRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.editAction],
+  })
   @patch('/permission/{id}')
   @response(204, {
     description: 'MenuRole PATCH success',
@@ -128,6 +154,10 @@ export class PermissionsController {
     await this.menuRoleRepository.updateById(id, menuRole);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.editAction],
+  })
   @put('/permission/{id}')
   @response(204, {
     description: 'MenuRole PUT success',
@@ -139,6 +169,10 @@ export class PermissionsController {
     await this.menuRoleRepository.replaceById(id, menuRole);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPermissionsId, SecurityConfig.deleteAction],
+  })
   @del('/permission/{id}')
   @response(204, {
     description: 'MenuRole DELETE success',

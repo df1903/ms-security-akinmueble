@@ -47,6 +47,12 @@ export class MenuRole extends Entity {
 
   @property({
     type: 'string',
+    required: true,
+  })
+  description: string;
+
+  @property({
+    type: 'string',
   })
   roleId?: string;
 

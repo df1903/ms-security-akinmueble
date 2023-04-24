@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Role} from '../models';
 import {RoleRepository} from '../repositories';
 
@@ -26,6 +28,10 @@ export class RoleController {
     public roleRepository: RoleRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.createAction],
+  })
   @post('/role')
   @response(200, {
     description: 'Role model instance',
@@ -47,6 +53,10 @@ export class RoleController {
     return this.roleRepository.create(role);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.listAction],
+  })
   @get('/role/count')
   @response(200, {
     description: 'Role model count',
@@ -56,6 +66,10 @@ export class RoleController {
     return this.roleRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.listAction],
+  })
   @get('/role')
   @response(200, {
     description: 'Array of Role model instances',
@@ -72,6 +86,10 @@ export class RoleController {
     return this.roleRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.editAction],
+  })
   @patch('/role')
   @response(200, {
     description: 'Role PATCH success count',
@@ -91,6 +109,10 @@ export class RoleController {
     return this.roleRepository.updateAll(role, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.listAction],
+  })
   @get('/role/{id}')
   @response(200, {
     description: 'Role model instance',
@@ -107,6 +129,10 @@ export class RoleController {
     return this.roleRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.editAction],
+  })
   @patch('/role/{id}')
   @response(204, {
     description: 'Role PATCH success',
@@ -125,6 +151,10 @@ export class RoleController {
     await this.roleRepository.updateById(id, role);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.editAction],
+  })
   @put('/role/{id}')
   @response(204, {
     description: 'Role PUT success',
@@ -136,6 +166,10 @@ export class RoleController {
     await this.roleRepository.replaceById(id, role);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.deleteAction],
+  })
   @del('/role/{id}')
   @response(204, {
     description: 'Role DELETE success',

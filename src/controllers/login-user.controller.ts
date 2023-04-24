@@ -1,5 +1,7 @@
+import {authenticate} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
 import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Login, User} from '../models';
 import {LoginRepository} from '../repositories';
 
@@ -9,6 +11,10 @@ export class LoginUserController {
     public loginRepository: LoginRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuLoginsId, SecurityConfig.listAction],
+  })
   @get('/logins/{id}/user', {
     responses: {
       '200': {

@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,6 +16,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Menu, Role} from '../models';
 import {MenuRepository} from '../repositories';
 
@@ -23,6 +25,10 @@ export class MenuRoleController {
     @repository(MenuRepository) protected menuRepository: MenuRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.listAction],
+  })
   @get('/menus/{id}/roles', {
     responses: {
       '200': {
@@ -42,6 +48,10 @@ export class MenuRoleController {
     return this.menuRepository.roles(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.createAction],
+  })
   @post('/menus/{id}/roles', {
     responses: {
       '200': {
@@ -67,6 +77,10 @@ export class MenuRoleController {
     return this.menuRepository.roles(id).create(role);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.editAction],
+  })
   @patch('/menus/{id}/roles', {
     responses: {
       '200': {
@@ -90,6 +104,10 @@ export class MenuRoleController {
     return this.menuRepository.roles(id).patch(role, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuMenusId, SecurityConfig.deleteAction],
+  })
   @del('/menus/{id}/roles', {
     responses: {
       '200': {

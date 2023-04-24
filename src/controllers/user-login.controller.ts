@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,14 +16,20 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Login, User} from '../models';
 import {UserRepository} from '../repositories';
 
 export class UserLoginController {
   constructor(
-    @repository(UserRepository) protected userRepository: UserRepository,
+    @repository(UserRepository)
+    protected userRepository: UserRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.listAction],
+  })
   @get('/users/{id}/logins', {
     responses: {
       '200': {
@@ -91,6 +98,10 @@ export class UserLoginController {
     return this.userRepository.logins(id).patch(login, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.deleteAction],
+  })
   @del('/users/{id}/logins', {
     responses: {
       '200': {

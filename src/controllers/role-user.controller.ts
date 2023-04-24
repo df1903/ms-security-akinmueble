@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,6 +16,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Role, User} from '../models';
 import {RoleRepository} from '../repositories';
 
@@ -23,6 +25,10 @@ export class RoleUserController {
     @repository(RoleRepository) protected roleRepository: RoleRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.listAction],
+  })
   @get('/roles/{id}/users', {
     responses: {
       '200': {
@@ -42,6 +48,10 @@ export class RoleUserController {
     return this.roleRepository.users(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.createAction],
+  })
   @post('/roles/{id}/users', {
     responses: {
       '200': {
@@ -68,6 +78,10 @@ export class RoleUserController {
     return this.roleRepository.users(id).create(user);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.editAction],
+  })
   @patch('/roles/{id}/users', {
     responses: {
       '200': {
@@ -91,6 +105,10 @@ export class RoleUserController {
     return this.roleRepository.users(id).patch(user, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRoleId, SecurityConfig.deleteAction],
+  })
   @del('/roles/{id}/users', {
     responses: {
       '200': {
