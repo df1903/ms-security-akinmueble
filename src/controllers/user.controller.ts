@@ -77,14 +77,48 @@ export class UserController {
     let encryptedPassword = this.userSecurityService.encryptTxt(password);
     // Assign encrypted password to user
     user.password = encryptedPassword;
+    user.validationStatus = true;
+    return this.userRepository.create(user);
+  }
+
+  async createPublic(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(User, {
+            title: 'NewUser',
+            exclude: ['_id'],
+          }),
+        },
+      },
+    })
+    user: Omit<User, '_id'>,
+  ): Promise<User> {
+    // Create password
+    let password = this.userSecurityService.createTxt(10);
+    console.log(password);
+    // Encrypt password
+    let encryptedPassword = this.userSecurityService.encryptTxt(password);
+    // Assign encrypted password to user
+    user.password = encryptedPassword;
+    // Email validation with hash
+    let hash = this.userSecurityService.createTxt(100);
+    user.validationHash = hash;
+    user.validationStatus = false;
+    user.status = false;
     // Send verification email
+    let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDAR </a>`;
     let data = {
       destinyEmail: user.email,
       destinyName: user.firstName,
-      emailBody: `Dale click al siguiente enlace para verificar tu correo`,
+      emailBody:
+        `Dale click al siguiente enlace para verificar tu correo <br/ >` +
+        `<br/ >${link}`,
       emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
     };
-    let url = NotificationsConfig.urlNotificationsVerificateEmail;
+    let url = NotificationsConfig.urlNotifications2FA;
+
+    // Send email
     this.serviceNotifications.sendNotification(data, url);
     return this.userRepository.create(user);
   }

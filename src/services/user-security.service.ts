@@ -50,6 +50,7 @@ export class UserSecurityService {
       where: {
         email: credentials.email,
         password: credentials.password,
+        validationStatus: true,
       },
     });
     return user as User;

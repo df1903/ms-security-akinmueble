@@ -62,6 +62,21 @@ export class User extends Entity {
   })
   password?: string;
 
+  @property({
+    type: 'string',
+  })
+  validationHash?: string;
+
+  @property({
+    type: 'boolean',
+  })
+  validationStatus?: boolean;
+
+  @property({
+    type: 'boolean',
+  })
+  status?: boolean;
+
   @hasMany(() => Login)
   logins: Login[];
 
