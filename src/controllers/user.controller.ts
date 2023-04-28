@@ -31,7 +31,7 @@ import {
   User,
   VerificationCode,
 } from '../models';
-import {LoginRepository, UserRepository} from '../repositories';
+import {LoginRepository, RoleRepository, UserRepository} from '../repositories';
 import {
   AuthService,
   NotificationsService,
@@ -42,6 +42,8 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(RoleRepository)
+    public roleRepository: RoleRepository,
     @service(UserSecurityService)
     public userSecurityService: UserSecurityService,
     @repository(LoginRepository)
@@ -78,9 +80,34 @@ export class UserController {
     // Assign encrypted password to user
     user.password = encryptedPassword;
     user.validationStatus = true;
+    let role = await this.roleRepository.findOne({
+      where: {_id: user.roleId},
+    });
+    if (role?.name == 'adviser') {
+      let subject = 'New Adviser Credentials';
+      let content =
+        `Hi ${user.firstName}, <br/ >` +
+        `These are your credentials: ` +
+        `<br/ ><br/ > >> Applicant's Data << ` +
+        `<br/ > Username: ${user?.email}` +
+        `<br/ > Password: ${password}`;
+      let data = {
+        destinyEmail: user.email,
+        destinyName: user.firstName,
+        emailSubject: subject,
+        emailBody: content,
+      };
+      let url = NotificationsConfig.urlNotificationsEmail;
+      this.serviceNotifications.sendNotification(data, url);
+    }
     return this.userRepository.create(user);
   }
 
+  @post('/user-public')
+  @response(200, {
+    description: 'User model instance',
+    content: {'application/json': {schema: getModelSchemaRef(User)}},
+  })
   async createPublic(
     @requestBody({
       content: {
