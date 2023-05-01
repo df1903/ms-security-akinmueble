@@ -31,7 +31,7 @@ import {
   User,
   VerificationCode,
 } from '../models';
-import {LoginRepository, UserRepository} from '../repositories';
+import {LoginRepository, RoleRepository, UserRepository} from '../repositories';
 import {
   AuthService,
   NotificationsService,
@@ -42,6 +42,8 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @repository(RoleRepository)
+    public roleRepository: RoleRepository,
     @service(UserSecurityService)
     public userSecurityService: UserSecurityService,
     @repository(LoginRepository)
@@ -77,14 +79,73 @@ export class UserController {
     let encryptedPassword = this.userSecurityService.encryptTxt(password);
     // Assign encrypted password to user
     user.password = encryptedPassword;
+    user.validationStatus = true;
+    let role = await this.roleRepository.findOne({
+      where: {_id: user.roleId},
+    });
+    if (role?.name == 'adviser') {
+      let subject = 'New Adviser Credentials';
+      let content =
+        `Hi ${user.firstName}, <br/ >` +
+        `These are your credentials: ` +
+        `<br/ ><br/ > >> Applicant's Data << ` +
+        `<br/ > Username: ${user?.email}` +
+        `<br/ > Password: ${password}`;
+      let data = {
+        destinyEmail: user.email,
+        destinyName: user.firstName,
+        emailSubject: subject,
+        emailBody: content,
+      };
+      let url = NotificationsConfig.urlNotificationsEmail;
+      this.serviceNotifications.sendNotification(data, url);
+    }
+    return this.userRepository.create(user);
+  }
+
+  @post('/user-public')
+  @response(200, {
+    description: 'User model instance',
+    content: {'application/json': {schema: getModelSchemaRef(User)}},
+  })
+  async createPublic(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(User, {
+            title: 'NewUser',
+            exclude: ['_id'],
+          }),
+        },
+      },
+    })
+    user: Omit<User, '_id'>,
+  ): Promise<User> {
+    // Create password
+    let password = this.userSecurityService.createTxt(10);
+    console.log(password);
+    // Encrypt password
+    let encryptedPassword = this.userSecurityService.encryptTxt(password);
+    // Assign encrypted password to user
+    user.password = encryptedPassword;
+    // Email validation with hash
+    let hash = this.userSecurityService.createTxt(100);
+    user.validationHash = hash;
+    user.validationStatus = false;
+    user.status = false;
     // Send verification email
+    let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDAR </a>`;
     let data = {
       destinyEmail: user.email,
       destinyName: user.firstName,
-      emailBody: `Dale click al siguiente enlace para verificar tu correo`,
+      emailBody:
+        `Dale click al siguiente enlace para verificar tu correo <br/ >` +
+        `<br/ >${link}`,
       emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
     };
-    let url = NotificationsConfig.urlNotificationsVerificateEmail;
+    let url = NotificationsConfig.urlNotifications2FA;
+
+    // Send email
     this.serviceNotifications.sendNotification(data, url);
     return this.userRepository.create(user);
   }

@@ -31,6 +31,12 @@ export class MenuRole extends Entity {
     type: 'boolean',
     required: true,
   })
+  listClient: boolean;
+
+  @property({
+    type: 'boolean',
+    required: true,
+  })
   delete: boolean;
 
   @property({
