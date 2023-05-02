@@ -9,4 +9,10 @@ export namespace NotificationsConfig {
     'http://localhost:7183/Notifications/send-general-email';
   export const urlFrontHashVerification: string =
     'http://localhost:4200/hash-verification';
+  export const urlNotificationAdviserCredentials =
+  'http://localhost:7183/Notifications/send-advisor-credentials';
+  export const urlNotificationRecoveryPassword =
+  'http://localhost:7183/Notifications/recovery-password-email';
+  export const urlNotificationVerificateEmail =
+  'http://localhost:7183/Notifications/send-verificate-email';
 }
