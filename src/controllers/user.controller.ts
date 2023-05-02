@@ -97,7 +97,7 @@ export class UserController {
         emailSubject: subject,
         emailBody: content,
       };
-      let url = NotificationsConfig.urlNotificationsEmail;
+      let url = NotificationsConfig.urlNotificationAdviserCredentials;
       this.serviceNotifications.sendNotification(data, url);
     }
     return this.userRepository.create(user);
@@ -143,8 +143,8 @@ export class UserController {
         `<br/ >${link}`,
       emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
     };
-    let url = NotificationsConfig.urlNotifications2FA;
 
+    let url = NotificationsConfig.urlNotifications2FA;
     // Send email
     this.serviceNotifications.sendNotification(data, url);
     return this.userRepository.create(user);
@@ -409,8 +409,15 @@ export class UserController {
         destinyPhone: user.phone,
         smsBody: `Hello ${user.firstName},\nyour new password is:\n\n ${newPassword}`,
       };
+      let dataEmail = {
+        destinyPhone: user.email,
+        emailBody: `Hello ${user.firstName},\nyour new password is:\n\n ${newPassword}`,
+      };
+
       let url = NotificationsConfig.urlNotificationsSMS;
       this.serviceNotifications.sendNotification(data, url);
+      let urlEmail = NotificationsConfig.urlNotificationRecoveryPassword
+      this.serviceNotifications.sendNotification(dataEmail,urlEmail)
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
