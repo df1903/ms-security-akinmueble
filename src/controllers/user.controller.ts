@@ -54,6 +54,15 @@ export class UserController {
     public serviceNotifications: NotificationsService,
   ) {}
 
+  /**
+   * A user is created by generating and encrypting the password
+   * @param user
+   * @returns new user
+   */
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuUserId, SecurityConfig.createAction],
+  })
   @post('/user')
   @response(200, {
     description: 'User model instance',
@@ -72,81 +81,29 @@ export class UserController {
     })
     user: Omit<User, '_id'>,
   ): Promise<User> {
+    console.log('OE');
+
     // Create password
     let password = this.userSecurityService.createTxt(10);
-    console.log(password);
     // Encrypt password
     let encryptedPassword = this.userSecurityService.encryptTxt(password);
     // Assign encrypted password to user
     user.password = encryptedPassword;
-    user.validationStatus = true;
+    // user.validationStatus = true;
     let role = await this.roleRepository.findOne({
       where: {_id: user.roleId},
     });
-    if (role?.name == 'adviser') {
-      let subject = 'New Adviser Credentials';
-      let content =
-        `Hi ${user.firstName}, <br/ >` +
-        `These are your credentials: ` +
-        `<br/ ><br/ > >> Applicant's Data << ` +
-        `<br/ > Username: ${user?.email}` +
-        `<br/ > Password: ${password}`;
-      let data = {
-        destinyEmail: user.email,
-        destinyName: user.firstName,
-        emailSubject: subject,
-        emailBody: content,
-      };
-      let url = NotificationsConfig.urlNotificationAdviserCredentials;
-      this.serviceNotifications.sendNotification(data, url);
+    if (role?._id) {
+      user.roleId = role?._id;
     }
-    return this.userRepository.create(user);
-  }
-
-  @post('/user-public')
-  @response(200, {
-    description: 'User model instance',
-    content: {'application/json': {schema: getModelSchemaRef(User)}},
-  })
-  async createPublic(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {
-            title: 'NewUser',
-            exclude: ['_id'],
-          }),
-        },
-      },
-    })
-    user: Omit<User, '_id'>,
-  ): Promise<User> {
-    // Create password
-    let password = this.userSecurityService.createTxt(10);
-    console.log(password);
-    // Encrypt password
-    let encryptedPassword = this.userSecurityService.encryptTxt(password);
-    // Assign encrypted password to user
-    user.password = encryptedPassword;
-    // Email validation with hash
-    let hash = this.userSecurityService.createTxt(100);
-    user.validationHash = hash;
-    user.validationStatus = false;
-    user.status = false;
-    // Send verification email
-    let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDAR </a>`;
-    let data = {
-      destinyEmail: user.email,
-      destinyName: user.firstName,
-      emailBody:
-        `Dale click al siguiente enlace para verificar tu correo <br/ >` +
-        `<br/ >${link}`,
-      emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
+    let info = {
+      firstName: user.firstName,
+      firstLastname: user.firstLastname,
+      email: user.email,
+      password: password,
+      role: role?.name,
     };
-
-    let url = NotificationsConfig.urlNotifications2FA;
-    // Send email
-    this.serviceNotifications.sendNotification(data, url);
+    this.serviceNotifications.sendCredentialsByEmail(info);
     return this.userRepository.create(user);
   }
 
@@ -405,19 +362,15 @@ export class UserController {
       user.password = encryptedPassword;
       this.userRepository.updateById(user._id, user);
       // Send sms notification
-      let data = {
-        destinyPhone: user.phone,
-        smsBody: `Hello ${user.firstName},\nyour new password is:\n\n ${newPassword}`,
+      let info = {
+        newPassword: newPassword,
+        firstName: user.firstName,
+        firstLastname: user.firstLastname,
+        email: user.email,
+        phone: user.phone,
       };
-      let dataEmail = {
-        destinyPhone: user.email,
-        emailBody: `Hello ${user.firstName},\nyour new password is:\n\n ${newPassword}`,
-      };
+      this.serviceNotifications.RecoveryPasswordCredentials(info);
 
-      let url = NotificationsConfig.urlNotificationsSMS;
-      this.serviceNotifications.sendNotification(data, url);
-      let urlEmail = NotificationsConfig.urlNotificationRecoveryPassword
-      this.serviceNotifications.sendNotification(dataEmail,urlEmail)
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
