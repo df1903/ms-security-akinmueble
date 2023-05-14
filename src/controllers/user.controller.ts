@@ -24,6 +24,7 @@ import {UserProfile} from '@loopback/security';
 import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {
+  ChangePassword,
   Credentials,
   Login,
   MenuRolePermissions,
@@ -374,5 +375,30 @@ export class UserController {
       return user;
     }
     return new HttpErrors[401]('Incorrect credentials');
+  }
+
+  // Change password
+  @post('/change-password')
+  @response(200, {
+    description: 'Change password',
+  })
+  async changePassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ChangePassword),
+        },
+      },
+    })
+    credentials: ChangePassword,
+  ): Promise<boolean> {
+    let user = await this.userRepository.findById(credentials.id);
+    if (user.password == credentials.oldPassword) {
+      user.password = credentials.newPassword;
+      this.userRepository.updateById(user._id, user);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

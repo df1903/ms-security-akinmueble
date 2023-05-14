@@ -7,3 +7,4 @@ export * from './recovery-password-credentials.model';
 export * from './role.model';
 export * from './user.model';
 export * from './verification-code.model';
+export * from './change-password.model';
