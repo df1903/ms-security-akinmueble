@@ -82,8 +82,6 @@ export class UserController {
     })
     user: Omit<User, '_id'>,
   ): Promise<User> {
-    console.log('OE');
-
     // Create password
     let password = this.userSecurityService.createTxt(10);
     // Encrypt password
@@ -229,7 +227,7 @@ export class UserController {
    * Custom API methods
    */
 
-  @post('/loginUser')
+  @post('/login-user')
   @response(200, {
     description: 'Login user with credentials',
     content: {'application/json': {schema: getModelSchemaRef(User)}},
@@ -294,7 +292,7 @@ export class UserController {
     );
   }
 
-  @post('/codeVerification')
+  @post('/code-verification')
   @response(200, {
     description: 'Validate verification code',
   })
@@ -313,6 +311,7 @@ export class UserController {
       let token = this.userSecurityService.createToken(user);
       if (user) {
         user.password = '';
+        let menu = [];
         try {
           this.userRepository.logins(user._id).patch(
             {
@@ -327,9 +326,11 @@ export class UserController {
         } catch {
           console.log("Code2FA status can't change into database");
         }
+        menu = await this.userSecurityService.getPermissionsByUser(user.roleId);
         return {
           user: user,
           token: token,
+          menu: menu,
         };
       }
     }
