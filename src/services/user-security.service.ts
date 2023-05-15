@@ -112,10 +112,11 @@ export class UserSecurityService {
   async getPermissionsByUser(roleId: string): Promise<MenuRole[]> {
     let menu: MenuRole[] = await this.menuRoleRepository.find({
       where: {
-        list: true,
+        or: [{list: true}, {listClient: true}],
         roleId: roleId,
       },
     });
+    console.log(menu);
     return menu;
   }
 }
