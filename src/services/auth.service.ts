@@ -36,7 +36,7 @@ export class AuthService {
           proceed = permission.list;
           break;
         case 'delete':
-          proceed = permission.delete;
+          proceed = permission.edit;
           break;
         case 'download':
           proceed = permission.download;
