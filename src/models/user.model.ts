@@ -62,6 +62,11 @@ export class User extends Entity {
   })
   password?: string;
 
+  @property({
+    type: 'number',
+  })
+  accountId?: number;
+
   // @property({
   //   type: 'string',
   // })
